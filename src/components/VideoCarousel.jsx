@@ -22,6 +22,12 @@ const VideoCarousel = () => {
   const {isEnd, startPlay, videoId, isLastVideo, isPlaying} = video;
 
   useGSAP(() => {
+    gsap.to('#slider', {
+      transform: `translateX(${-100 * videoId}%)`,
+      duration: 2,
+      ease: 'power4.inOut',
+    });
+
     gsap.to('#video', {
       scrollTrigger: {
         trigger: '#video',
@@ -118,6 +124,9 @@ const VideoCarousel = () => {
       case 'play':
         setVideo((pre) => ({...pre, isPlaying: !pre.isPlaying}));
         break;
+      case 'pause':
+        setVideo((pre) => ({...pre, isPlaying: !pre.isPlaying}));
+        break;
       default:
         return video;
     }
@@ -135,7 +144,15 @@ const VideoCarousel = () => {
                   playsInline={true}
                   preload="auto"
                   muted
+                  className={`${list.id === 2 && 'translate-x-44'}
+                    pointer-events-none
+                  `}
                   ref={(el) => (videoRef.current[i] = el)}
+                  onEnded={() =>
+                    i !== 3
+                      ? handleProcess('video-end', i)
+                      : handleProcess('video-last')
+                  }
                   onPlay={() =>
                     setVideo((prevVideo) => ({...prevVideo, isPlaying: true}))
                   }
